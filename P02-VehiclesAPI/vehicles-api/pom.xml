@@ -7,8 +7,11 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.1.18.RELEASE</version>
+        <!-- java: package org.springframework.hateoas.mvc does not exist -->
+        <!-- <version>2.5.6</version> -->
         <relativePath/> <!-- lookup parent from com.udacity.pricing.repository -->
     </parent>
+
     <groupId>com.udacity</groupId>
     <artifactId>vehicles-api</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -16,7 +19,7 @@
     <description>A Restful API for vehicles</description>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
 <!--		<junit.version>4.13.2</junit.version>-->
     </properties>
 
