@@ -21,7 +21,6 @@
     <properties>
         <java.version>11</java.version>
         <springfox-swagger.version>2.9.2</springfox-swagger.version>
-<!--        <springfox-swagger.version>2.10.5</springfox-swagger.version>-->
 <!--		<junit.version>4.13.2</junit.version>-->
     </properties>
 
