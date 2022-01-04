@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * TODO: Convert the application from a REST API to a microservice.
  */
 @SpringBootApplication
+@EnableEurekaClient
 public class PricingServiceApplication {
 
     public static void main(String[] args) {
