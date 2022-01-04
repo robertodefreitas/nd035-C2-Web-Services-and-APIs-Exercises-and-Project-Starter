@@ -19,7 +19,9 @@
     <description>A Restful API for vehicles</description>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>11</java.version>
+        <springfox-swagger.version>2.9.2</springfox-swagger.version>
+<!--        <springfox-swagger.version>2.10.5</springfox-swagger.version>-->
 <!--		<junit.version>4.13.2</junit.version>-->
     </properties>
 
@@ -80,6 +82,21 @@
             <artifactId>modelmapper</artifactId>
             <version>2.3.2</version>
         </dependency>
+
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${springfox-swagger.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${springfox-swagger.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
