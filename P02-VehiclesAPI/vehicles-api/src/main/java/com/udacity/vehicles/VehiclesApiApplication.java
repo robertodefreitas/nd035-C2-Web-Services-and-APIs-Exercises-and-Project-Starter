@@ -28,6 +28,7 @@ public class VehiclesApiApplication {
      * Initializes the car manufacturers available to the Vehicle API.
      * @param repository where the manufacturer information persists.
      * @return the car manufacturers to add to the related repository
+     * MY-NOTES: see "extends JpaRepository"
      */
     @Bean
     CommandLineRunner initDatabase(ManufacturerRepository repository) {
@@ -49,6 +50,7 @@ public class VehiclesApiApplication {
      * Web Client for the maps (location) API
      * @param endpoint where to communicate for the maps API
      * @return created maps endpoint
+     * endpoint variable values are into the resources/application.properties available
      */
     @Bean(name="maps")
     public WebClient webClientMaps(@Value("${maps.endpoint}") String endpoint) {
@@ -59,6 +61,7 @@ public class VehiclesApiApplication {
      * Web Client for the pricing API
      * @param endpoint where to communicate for the pricing API
      * @return created pricing endpoint
+     * endpoint variable values are into the resources/application.properties available
      */
     @Bean(name="pricing")
     public WebClient webClientPricing(@Value("${pricing.endpoint}") String endpoint) {
