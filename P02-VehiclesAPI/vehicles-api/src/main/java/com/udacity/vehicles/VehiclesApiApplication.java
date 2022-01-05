@@ -28,7 +28,10 @@ public class VehiclesApiApplication {
      * Initializes the car manufacturers available to the Vehicle API.
      * @param repository where the manufacturer information persists.
      * @return the car manufacturers to add to the related repository
-     * MY-NOTES: see "extends JpaRepository"
+     * MY-NOTES:
+     *   see "extends JpaRepository"
+     *   DB is not configurated, we need to configure this on the file application.properties
+     *   and add the dependency for h2 on pom.xml file
      */
     @Bean
     CommandLineRunner initDatabase(ManufacturerRepository repository) {
