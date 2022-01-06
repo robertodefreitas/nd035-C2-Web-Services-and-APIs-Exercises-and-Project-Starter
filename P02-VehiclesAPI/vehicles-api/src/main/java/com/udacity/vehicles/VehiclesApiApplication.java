@@ -1,5 +1,15 @@
 package com.udacity.vehicles;
 
+import java.time.LocalDateTime;
+import java.time.Month;
+
+import javax.xml.soap.Detail;
+
+import com.udacity.vehicles.domain.Condition;
+import com.udacity.vehicles.domain.Location;
+import com.udacity.vehicles.domain.car.Car;
+import com.udacity.vehicles.domain.car.CarRepository;
+import com.udacity.vehicles.domain.car.Details;
 import com.udacity.vehicles.domain.manufacturer.Manufacturer;
 import com.udacity.vehicles.domain.manufacturer.ManufacturerRepository;
 import org.modelmapper.ModelMapper;
@@ -15,6 +25,9 @@ import org.springframework.web.reactive.function.client.WebClient;
  * Launches a Spring Boot application for the Vehicles API,
  * initializes the car manufacturers in the database,
  * and launches web clients to communicate with maps and pricing.
+ * MY-NOTES:
+ *   Some information about Auditing in german:
+ *   https://www.appcare.at/2018/01/31/spring-data-auditing.html
  */
 @SpringBootApplication
 @EnableJpaAuditing
@@ -29,7 +42,7 @@ public class VehiclesApiApplication {
      * @param repository where the manufacturer information persists.
      * @return the car manufacturers to add to the related repository
      * MY-NOTES:
-     *   see "extends JpaRepository"
+     *   see "extends JpaRepository" to understand what happens
      *   DB is not configurated, we need to configure this on the file application.properties
      *   and add the dependency for h2 on pom.xml file
      */
@@ -43,6 +56,21 @@ public class VehiclesApiApplication {
             repository.save(new Manufacturer(104, "Dodge"));
         };
     }
+
+/*
+    // MY-CODE
+    // wrong, this doesn't work.
+    @Bean
+    CommandLineRunner initDatabase2(CarRepository repository) {
+        // https://howtodoinjava.com/java/date-time/java-localdatetime-class/
+        LocalDateTime localDateTime = LocalDateTime.of(2019, Month.MARCH, 28, 14, 33);
+        // https://www.w3schools.com/java/java_enums.asp
+        Condition cond = Condition.USED;
+        return args -> {
+            repository.save(new Car((long)1, localDateTime, localDateTime, cond, new Details(), new Location(20.0,30.0), "1.2"));
+        };
+    }
+*/
 
     @Bean
     public ModelMapper modelMapper() {

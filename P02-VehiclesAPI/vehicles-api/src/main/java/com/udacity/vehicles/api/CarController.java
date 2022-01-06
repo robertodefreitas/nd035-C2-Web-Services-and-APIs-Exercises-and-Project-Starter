@@ -75,13 +75,14 @@ class CarController {
     @PostMapping
     ResponseEntity<?> post(@Valid @RequestBody Car car) throws URISyntaxException {
         /**
-         * TODO: Use the `save` method from the Car Service to save the input car.
-         * TODO: Use the `assembler` on that saved car and return as part of the response.
+         * TODO: Use the `save` method from the Car Service to save the input car. [DONE]
+         * TODO: Use the `assembler` on that saved car and return as part of the response. [DONE]
          *   Update the first line as part of the above implementing.
          */
         //Resource<Car> resource = assembler.toResource(new Car());
 
         // MY SOLUTION
+        // now is possible to build vehicles-api
         Resource<Car> resource = assembler.toResource(car);
         car = carService.save(car);
 

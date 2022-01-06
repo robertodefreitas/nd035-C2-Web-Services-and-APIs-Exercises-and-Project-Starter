@@ -21,6 +21,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
  * Declares the Car class, related variables and methods.
  */
 @Entity
+// https://www.appcare.at/2018/01/31/spring-data-auditing.html
 @EntityListeners(AuditingEntityListener.class)
 public class Car {
 
@@ -34,6 +35,7 @@ public class Car {
     @LastModifiedDate
     private LocalDateTime modifiedAt;
 
+    // https://tomee.apache.org/examples-trunk/jpa-enumerated/
     @NotNull
     @Enumerated(EnumType.STRING)
     private Condition condition;
@@ -48,6 +50,23 @@ public class Car {
 
     @Transient
     private String price;
+
+/*
+    // MY-CODE
+    // try to create a car on the file VehiclesApiApplication.java and save this on DB (method initDatabase2)
+    // the method doesn't work.
+    public Car(){ }
+
+    public Car(Long id, LocalDateTime createdAt, LocalDateTime modifiedAt, Condition condition, Details details, Location location, String price) {
+        this.id = id;
+        this.createdAt = createdAt;
+        this.modifiedAt = modifiedAt;
+        this.condition = condition;
+        this.details = details;
+        this.location = location;
+        this.price = price;
+    }
+*/
 
     public Long getId() {
         return id;
