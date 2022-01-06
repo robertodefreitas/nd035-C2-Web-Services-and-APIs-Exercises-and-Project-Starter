@@ -83,8 +83,8 @@ class CarController {
 
         // MY SOLUTION
         // now is possible to build vehicles-api
-        Resource<Car> resource = assembler.toResource(car);
-        car = carService.save(car);
+        Car carSaved = carService.save(car);
+        Resource<Car> resource = assembler.toResource(carSaved);
 
         return ResponseEntity.created(new URI(resource.getId().expand().getHref())).body(resource);
     }
