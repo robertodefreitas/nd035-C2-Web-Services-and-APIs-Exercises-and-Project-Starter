@@ -77,6 +77,13 @@ public class CarControllerTest {
     @Test
     public void createCar() throws Exception {
         Car car = getCar();
+
+        // because of following error by build this api i added an id to the created car
+        // mvn clean package
+        // [ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.2:test (default-test) on project vehicles-api: There are test failures.
+        car.setId((long)1);
+        //car.setId(1L);
+
         mvc.perform(
                 post(new URI("/cars"))
                         .content(json.write(car).getJson())
