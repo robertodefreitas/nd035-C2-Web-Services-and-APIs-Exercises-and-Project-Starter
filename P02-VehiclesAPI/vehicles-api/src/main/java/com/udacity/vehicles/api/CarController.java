@@ -81,7 +81,7 @@ class CarController {
          */
         //Resource<Car> resource = assembler.toResource(new Car());
 
-        // MY SOLUTION
+        // MY-SOLUTION
         // now is possible to build vehicles-api
         Car carSaved = carService.save(car);
         Resource<Car> resource = assembler.toResource(carSaved);
@@ -98,12 +98,20 @@ class CarController {
     @PutMapping("/{id}")
     ResponseEntity<?> put(@PathVariable Long id, @Valid @RequestBody Car car) {
         /**
-         * TODO: Set the id of the input car object to the `id` input.
-         * TODO: Save the car using the `save` method from the Car service
-         * TODO: Use the `assembler` on that updated car and return as part of the response.
+         * TODO: Set the id of the input car object to the `id` input. [DONE]
+         * TODO: Save the car using the `save` method from the Car service [DONE]
+         * TODO: Use the `assembler` on that updated car and return as part of the response. [DONE]
          *   Update the first line as part of the above implementing.
          */
-        Resource<Car> resource = assembler.toResource(new Car());
+        //Resource<Car> resource = assembler.toResource(new Car());
+
+        // MY-SOLUTION
+        // s. CarService.save(...), first set id, then save
+        car.setId(id);
+        Car carSaved = carService.save(car);
+        //carSaved.setId(id);
+        Resource<Car> resource = assembler.toResource(carSaved);
+
         return ResponseEntity.ok(resource);
     }
 
