@@ -37,6 +37,8 @@ public class Details {
 
     private String externalColor;
 
+    // METHODS
+
     public String getBody() {
         return body;
     }

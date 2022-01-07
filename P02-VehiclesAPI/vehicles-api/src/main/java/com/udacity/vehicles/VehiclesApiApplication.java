@@ -2,6 +2,7 @@ package com.udacity.vehicles;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.Optional;
 
 import javax.xml.soap.Detail;
 
@@ -48,6 +49,27 @@ public class VehiclesApiApplication {
      */
     @Bean
     CommandLineRunner initDatabase(ManufacturerRepository repository) {
+
+        // MY-CODE
+        // Check how jpa works.
+        String className = this.getClass().getSimpleName();
+        String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
+        System.out.println("INFO [" + className + "] [" + methodeName + "] Table MANUFACTURER will be started with values.");
+
+        // https://spring.io/guides/gs/accessing-data-jpa/
+        repository.save(new Manufacturer(1, "Auto001"));
+        repository.save(new Manufacturer(999, "Auto999"));
+
+        // class.get() -> get the class, all methods are acessible
+        //Optional<Manufacturer> manufacturerResult = repository.findById(1);
+        //System.out.println("INFO [" +className + "] [" + methodeName + "] " + manufacturerResult.get().getCode()  + " | " + manufacturerResult.get().getName());
+        Manufacturer manufacturerResult = repository.findById(1).get();
+        System.out.println("INFO [" +className + "] [" + methodeName + "] " + manufacturerResult.getCode()  + " | " + manufacturerResult.getName());
+        for (Manufacturer manufacturerOne : repository.findAll()) {
+            System.out.println("INFO [" +className + "] [" + methodeName + "] "  + manufacturerOne.getCode() + " | " + manufacturerOne.getName());
+        }
+
+
         return args -> {
             repository.save(new Manufacturer(100, "Audi"));
             repository.save(new Manufacturer(101, "Chevrolet"));
