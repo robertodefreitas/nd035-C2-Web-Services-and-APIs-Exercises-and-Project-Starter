@@ -19,6 +19,7 @@
     <properties>
         <java.version>17</java.version>
         <spring-cloud.version>2020.0.4</spring-cloud.version>
+        <javax.activation.version>1.1</javax.activation.version>
 <!--        <jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>-->
 <!--        <jaxb-api.version>2.3.1</jaxb-api.version>-->
 <!--        <junit.version>4.13.2</junit.version>-->
@@ -44,12 +45,36 @@
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
 
+
+        <!--
+        2022-01-07 10:58:26.098 ERROR c.s.j.s.i.w.WadlApplicationContextImpl
+        Implementation of JAXB-API has not been found on module path or classpath.
+        javax.xml.bind.JAXBException: Implementation of JAXB-API has not been found on module path or classpath.
+
+        SOLUTION: https://stackoverflow.com/questions/51916221/javax-xml-bind-jaxbexception-implementation-of-jaxb-api-has-not-been-found-on-mo
+        +3 dependencies
+        -->
         <!-- https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api -->
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
 <!--            <version>${jaxb-api.version}</version>-->
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/javax.activation/activation -->
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>${javax.activation.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime -->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+        </dependency>
+
+
 
         <!-- https://mvnrepository.com/artifact/junit/junit -->
         <dependency>

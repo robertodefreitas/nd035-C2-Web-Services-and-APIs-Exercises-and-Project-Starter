@@ -93,6 +93,7 @@ public class VehiclesApiApplication {
      * @param endpoint where to communicate for the pricing API
      * @return created pricing endpoint
      * endpoint variable values are into the resources/application.properties available
+     * https://cloud.spring.io/spring-cloud-netflix/multi/multi__service_discovery_eureka_clients.html
      */
     @Bean(name="pricing")
     public WebClient webClientPricing(@Value("${pricing.endpoint}") String endpoint) {
