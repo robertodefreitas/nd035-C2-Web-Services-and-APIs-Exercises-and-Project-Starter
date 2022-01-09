@@ -2,7 +2,11 @@ package com.udacity.vehicles.service;
 
 import com.udacity.vehicles.domain.car.Car;
 import com.udacity.vehicles.domain.car.CarRepository;
+
+import java.util.EmptyStackException;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 /**
@@ -42,7 +46,25 @@ public class CarService {
          *   If it does not exist, throw a CarNotFoundException
          *   Remove the below code as part of your implementation.
          */
-        Car car = new Car();
+        //Car car = new Car();
+
+        // Order possibility with Optional results from repository.findById
+        // https://stackoverflow.com/questions/30686215/avoid-nosuchelementexception-with-stream
+
+        // repository will be created by the method save(Car car)
+        Car carFounded = repository.findById(id).get();
+        String className = this.getClass().getSimpleName();
+        String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
+
+        if (carFounded != null){
+            System.out.println("INFO [" + className + "] [" + methodeName + "] carFounded is NOT NULL");
+        } else {
+            System.out.println("INFO [" + className + "] [" + methodeName + "] carFounded is NULL");
+            throw new IllegalArgumentException("Its missing.");
+        }
+
+        return carFounded;
+
 
         /**
          * TODO: Use the Pricing Web client you create in `VehiclesApiApplication`
@@ -63,7 +85,7 @@ public class CarService {
          */
 
 
-        return car;
+        //return car;
     }
 
     /**
