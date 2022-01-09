@@ -52,18 +52,24 @@ public class CarService {
         // https://stackoverflow.com/questions/30686215/avoid-nosuchelementexception-with-stream
 
         // repository will be created by the method save(Car car)
-        Car carFounded = repository.findById(id).get();
+        //Car carFounded = repository.findById(id).get();
+        // https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html
+        Optional<Car> carResultOptinal = repository.findById((long)1);
+
         String className = this.getClass().getSimpleName();
         String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
 
-        if (carFounded != null){
+        if (carResultOptinal.isPresent()){
             System.out.println("INFO [" + className + "] [" + methodeName + "] carFounded is NOT NULL");
+            //carResult carResultOptinal.get();
         } else {
             System.out.println("INFO [" + className + "] [" + methodeName + "] carFounded is NULL");
-            throw new IllegalArgumentException("Its missing.");
+            //carResult carResultOptinal.get();
+            //throws new NoSuchElementException;
+            //throw new IllegalArgumentException("Its missing.");
         }
 
-        return carFounded;
+        return carResultOptinal.get();
 
 
         /**
