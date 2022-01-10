@@ -128,7 +128,7 @@ class CarController {
     @DeleteMapping("/{id}")
     ResponseEntity<?> delete(@PathVariable Long id) {
         /**
-         * TODO: Use the Car Service to delete the requested vehicle.
+         * TODO: Use the Car Service to delete the requested vehicle. [DONE]
          */
         //Car car = carService.findById(id);
         carService.delete(id);
