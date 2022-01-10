@@ -98,26 +98,26 @@ public class CarService {
         try {
             // carRepository gets data by the method save(Car car)
             carFounded = carRepository.findById(id).get();
-            System.out.println("INFO [" + className + "] [" + methodeName + "] Object carFounded with ID " + id + " is NOT NULL");
-            log.info("[{}] Object carFounded with ID {} is NOT NULL", methodeName, id);
+            System.out.println("INFO [" + className + "] [" + methodeName + "] Object carFounded with ID " + id + " is NOT NULL (car available)");
+            log.info("[{}] Object carFounded with ID {} is NOT NULL (car available)", methodeName, id);
         }
 //        catch (NoSuchElementException | NullPointerException exc) {
-//            System.out.println("ERRO [" + className + "] [" + methodeName + "]  object carFounded with ID " + id + " is NULL (both Exceptions)");
+//            System.out.println("ERRO [" + className + "] [" + methodeName + "]  object carFounded with ID " + id + " is NULL (car NOT available) (both Exceptions)");
 //        }
         catch (NullPointerException npe) {
-            System.out.println("ERRO [" + className + "] [" + methodeName + "]  Object carFounded with ID " + id + " is NULL (NullPointerException)");
-            log.error("[{}] Object carFounded with ID {} is NULL (NullPointerException)", methodeName, id);
+            System.out.println("ERRO [" + className + "] [" + methodeName + "]  Object carFounded with ID " + id + " is NULL (car NOT available) (NullPointerException)");
+            log.error("[{}] Object carFounded with ID {} is NULL (car NOT available) (NullPointerException)", methodeName, id);
         }
         catch (NoSuchElementException nsee) {
-            System.out.println("ERRO [" + className + "] [" + methodeName + "]  Object carFounded with ID " + id + " is NULL (NoSuchElementException)");
-            log.error("[{}] Object carFounded with ID {} is NULL (NoSuchElementException)", methodeName, id);
+            System.out.println("ERRO [" + className + "] [" + methodeName + "]  Object carFounded with ID " + id + " is NULL (car NOT available) (NoSuchElementException)");
+            log.error("[{}] Object carFounded with ID {} is NULL (car NOT available) (NoSuchElementException)", methodeName, id);
             // https://stackoverflow.com/questions/8423700/how-to-create-a-custom-exception-type-in-java
             throw new CarNotFoundException();
         }
         // https://stackoverflow.com/questions/8423700/how-to-create-a-custom-exception-type-in-java
         catch (CarNotFoundException cnfe) {
-            System.out.println("ERRO [" + className + "] [" + methodeName + "]  Object carFounded with ID " + id + " is NULL (CarNotFoundException)");
-            log.error("[{}] Object carFounded with ID {} is NULL (CarNotFoundException)", methodeName, id);
+            System.out.println("ERRO [" + className + "] [" + methodeName + "]  Object carFounded with ID " + id + " is NULL (car NOT available) (CarNotFoundException)");
+            log.error("[{}] Object carFounded with ID {} is NULL (car NOT available) (CarNotFoundException)", methodeName, id);
         }
 
 
@@ -182,16 +182,20 @@ public class CarService {
      * @param id the ID number of the car to delete
      */
     public void delete(Long id) {
-        /**
-         * TODO: Find the car by ID from the `repository` if it exists.
-         *   If it does not exist, throw a CarNotFoundException
-         */
 
+        String className = this.getClass().getSimpleName();
+        String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
 
         /**
-         * TODO: Delete the car from the repository.
+         * TODO: Find the car by ID from the `repository` if it exists. [DONE]
+         *   If it does not exist, throw a CarNotFoundException [DONE]
          */
+        Car carToRemove = findById(id);
 
-
+        /**
+         * TODO: Delete the car from the repository. [DONE]
+         */
+        carRepository.delete(carToRemove);
+        log.info("[{}] Car ID {} is removed.", methodeName, carToRemove.getId());
     }
 }

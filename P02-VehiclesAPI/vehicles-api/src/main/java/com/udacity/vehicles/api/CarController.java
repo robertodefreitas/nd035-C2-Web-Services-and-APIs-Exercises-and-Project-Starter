@@ -130,6 +130,8 @@ class CarController {
         /**
          * TODO: Use the Car Service to delete the requested vehicle.
          */
+        //Car car = carService.findById(id);
+        carService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
