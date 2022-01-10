@@ -87,7 +87,7 @@ class CarController {
         //Resource<Car> resource = assembler.toResource(new Car());
 
         // MY-SOLUTION
-        // now is possible to build vehicles-api
+        // this was the first input into the project -> now is possible to build vehicles-api
         Car carSaved = carService.save(car);
         Resource<Car> resource = assembler.toResource(carSaved);
 

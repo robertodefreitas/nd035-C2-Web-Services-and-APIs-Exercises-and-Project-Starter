@@ -5,6 +5,7 @@ import com.udacity.vehicles.domain.car.CarRepository;
 
 import java.util.EmptyStackException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -42,34 +43,67 @@ public class CarService {
      */
     public Car findById(Long id) {
         /**
-         * TODO: Find the car by ID from the `repository` if it exists.
-         *   If it does not exist, throw a CarNotFoundException
+         * TODO: Find the car by ID from the `repository` if it exists. [DONE]
+         *   If it does not exist, throw a CarNotFoundException [DONE]
          *   Remove the below code as part of your implementation.
          */
         //Car car = new Car();
-
-        // Order possibility with Optional results from repository.findById
-        // https://stackoverflow.com/questions/30686215/avoid-nosuchelementexception-with-stream
-
-        // repository will be created by the method save(Car car)
-        //Car carFounded = repository.findById(id).get();
-        // https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html
-        Optional<Car> carResultOptinal = repository.findById((long)1);
-
+        Car carFounded = null;
+        
         String className = this.getClass().getSimpleName();
         String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
 
-        if (carResultOptinal.isPresent()){
-            System.out.println("INFO [" + className + "] [" + methodeName + "] carFounded is NOT NULL");
-            //carResult carResultOptinal.get();
-        } else {
-            System.out.println("INFO [" + className + "] [" + methodeName + "] carFounded is NULL");
-            //carResult carResultOptinal.get();
-            //throws new NoSuchElementException;
-            //throw new IllegalArgumentException("Its missing.");
-        }
+        /**
+         * ## Example from P2-L2 ##
+         * public String retrieveDogBreedById(Long id) {
+         *     Optional<String> optionalBreed = Optional.ofNullable(dogRepository.findBreedById(id));
+         *     String breed = optionalBreed.orElseThrow(DogNotFoundException::new);
+         *     return breed;
+         * }
+         * -> doesnt work!
+         */
+        // repository will be created by the method save(Car car)
+//        Optional<Car> carFoundedOptional = Optional.ofNullable(repository.findById(id).get());
+//        carFounded = carFoundedOptional.orElseThrow(CarNotFoundException::new);
 
-        return carResultOptinal.get();
+/*
+        // Example with the class Optional results from repository.findById
+        // https://stackoverflow.com/questions/30686215/avoid-nosuchelementexception-with-stream
+
+        // https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html
+        // repository will be created by the method save(Car car)
+        //Optional<Car> carResultOptinal = repository.findById((long)1);
+        Optional<Car> carResultOptinal = repository.findById(id);
+        if (carResultOptinal.isPresent()){
+            System.out.println("INFO [" + className + "] [" + methodeName + "] object carFounded with ID " + id + " is NOT NULL");
+            carFounded = carResultOptinal.get();
+        } else {
+            System.out.println("INFO [" + className + "] [" + methodeName + "] object carFounded with ID " + id + " is NULL");
+        }
+*/
+
+
+        try {
+            // repository will be created by the method save(Car car)
+            carFounded = repository.findById(id).get();
+            System.out.println("INFO [" + className + "] [" + methodeName + "] object carFounded with ID " + id + " is NOT NULL");
+
+        }
+//        catch (NoSuchElementException | NullPointerException exc) {
+//            System.out.println("ERRO [" + className + "] [" + methodeName + "]  object carFounded with ID " + id + " is NULL (both Exceptions)");
+//        }
+        catch (NullPointerException npe) {
+            System.out.println("ERRO [" + className + "] [" + methodeName + "]  object carFounded with ID " + id + " is NULL (NullPointerException)");
+        }
+        catch (NoSuchElementException nsee) {
+            System.out.println("ERRO [" + className + "] [" + methodeName + "]  object carFounded with ID " + id + " is NULL (NoSuchElementException)");
+            // https://stackoverflow.com/questions/8423700/how-to-create-a-custom-exception-type-in-java
+            throw new CarNotFoundException();
+        }
+        // https://stackoverflow.com/questions/8423700/how-to-create-a-custom-exception-type-in-java
+        catch (CarNotFoundException cnfe) {
+            System.out.println("ERRO [" + className + "] [" + methodeName + "]  object carFounded with ID " + id + " is NULL (CarNotFoundException)");
+        }
 
 
         /**
@@ -79,6 +113,7 @@ public class CarService {
          * Note: The car class file uses @transient, meaning you will need to call
          *   the pricing service each time to get the price.
          */
+
 
 
         /**
@@ -92,6 +127,7 @@ public class CarService {
 
 
         //return car;
+        return carFounded;
     }
 
     /**
