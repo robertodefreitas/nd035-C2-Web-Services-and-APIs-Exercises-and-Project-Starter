@@ -23,18 +23,18 @@ public class CarService {
     private static final Logger log = LoggerFactory.getLogger(CarService.class);
 
     private final CarRepository carRepository;
-    //private final MapsClient mapsClient;
-    //private final PriceClient priceClient;
+    private final MapsClient mapsClient;
+    private final PriceClient priceClient;
 
-    public CarService(CarRepository carRepository) {
-    //public CarService(CarRepository carRepository, MapsClient mapsClient, PriceClient priceClient) {
+    //public CarService(CarRepository carRepository) {
+    public CarService(CarRepository carRepository, MapsClient mapsClient, PriceClient priceClient) {
         /**
          * TODO: Add the Maps and Pricing Web Clients you create
-         *   in `VehiclesApiApplication` as arguments and set them here.
+         *   in `VehiclesApiApplication` as arguments and set them here. [DONE]
          */
         this.carRepository = carRepository;
-        //this.mapsClient = mapsClient;
-        //this.priceClient = priceClient;
+        this.mapsClient = mapsClient;
+        this.priceClient = priceClient;
     }
 
     /**
