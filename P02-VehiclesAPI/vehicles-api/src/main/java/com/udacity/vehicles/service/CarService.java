@@ -1,7 +1,9 @@
 package com.udacity.vehicles.service;
 
 import com.udacity.vehicles.client.maps.MapsClient;
+import com.udacity.vehicles.client.prices.Price;
 import com.udacity.vehicles.client.prices.PriceClient;
+import com.udacity.vehicles.domain.Location;
 import com.udacity.vehicles.domain.car.Car;
 import com.udacity.vehicles.domain.car.CarRepository;
 
@@ -97,48 +99,59 @@ public class CarService {
             // carRepository gets data by the method save(Car car)
             carFounded = carRepository.findById(id).get();
             System.out.println("INFO [" + className + "] [" + methodeName + "] Object carFounded with ID " + id + " is NOT NULL");
-            log.info("Object carFounded with ID {} is NOT NULL", id);
+            log.info("[{}] Object carFounded with ID {} is NOT NULL", methodeName, id);
         }
 //        catch (NoSuchElementException | NullPointerException exc) {
 //            System.out.println("ERRO [" + className + "] [" + methodeName + "]  object carFounded with ID " + id + " is NULL (both Exceptions)");
 //        }
         catch (NullPointerException npe) {
             System.out.println("ERRO [" + className + "] [" + methodeName + "]  Object carFounded with ID " + id + " is NULL (NullPointerException)");
-            log.error("Object carFounded with ID {} is NULL (NullPointerException)", id);
+            log.error("[{}] Object carFounded with ID {} is NULL (NullPointerException)", methodeName, id);
         }
         catch (NoSuchElementException nsee) {
             System.out.println("ERRO [" + className + "] [" + methodeName + "]  Object carFounded with ID " + id + " is NULL (NoSuchElementException)");
-            log.error("Object carFounded with ID {} is NULL (NoSuchElementException)", id);
+            log.error("[{}] Object carFounded with ID {} is NULL (NoSuchElementException)", methodeName, id);
             // https://stackoverflow.com/questions/8423700/how-to-create-a-custom-exception-type-in-java
             throw new CarNotFoundException();
         }
         // https://stackoverflow.com/questions/8423700/how-to-create-a-custom-exception-type-in-java
         catch (CarNotFoundException cnfe) {
             System.out.println("ERRO [" + className + "] [" + methodeName + "]  Object carFounded with ID " + id + " is NULL (CarNotFoundException)");
-            log.error("Object carFounded with ID {} is NULL (CarNotFoundException)", id);
+            log.error("[{}] Object carFounded with ID {} is NULL (CarNotFoundException)", methodeName, id);
         }
 
 
         /**
          * TODO: Use the Pricing Web client you create in `VehiclesApiApplication`
-         *   to get the price based on the `id` input'
-         * TODO: Set the price of the car
+         *   to get the price based on the `id` input' [DONE]
+         * TODO: Set the price of the car [DONE]
          * Note: The car class file uses @transient, meaning you will need to call
          *   the pricing service each time to get the price.
          */
-
-        //priceClient.getPrice(id);
+        String priceReturn = priceClient.getPrice(id);
+        carFounded.setPrice(priceReturn);
+        log.info("[{}] priceClient.getPrice({}): {}",
+                methodeName,
+                id,
+                priceReturn
+        );
 
 
         /**
          * TODO: Use the Maps Web client you create in `VehiclesApiApplication`
          *   to get the address for the vehicle. You should access the location
-         *   from the car object and feed it to the Maps service.
-         * TODO: Set the location of the vehicle, including the address information
+         *   from the car object and feed it to the Maps service. [DONE]
+         * TODO: Set the location of the vehicle, including the address information [DONE]
          * Note: The Location class file also uses @transient for the address,
          * meaning the Maps service needs to be called each time for the address.
          */
-
+        Location carLocation = carFounded.getLocation();
+        carLocation = mapsClient.getAddress(carLocation);
+        carFounded.setLocation(carLocation);
+        log.info("[{}] mapsClient.getAddress(carLocation).getCity(): {}",
+                methodeName,
+                mapsClient.getAddress(carLocation).getCity()
+        );
 
         //return car;
         return carFounded;
@@ -151,6 +164,7 @@ public class CarService {
      */
     public Car save(Car car) {
         if (car.getId() != null) {
+            log.info("Car {}/{} with ID {} will be updated.", car.getDetails().getBody(), car.getDetails().getModel(), car.getId());
             return carRepository.findById(car.getId())
                     .map(carToBeUpdated -> {
                         carToBeUpdated.setDetails(car.getDetails());
@@ -159,6 +173,7 @@ public class CarService {
                     }).orElseThrow(CarNotFoundException::new);
         }
 
+        log.info("Car {}/{} will be saved.", car.getDetails().getBody(), car.getDetails().getModel());
         return carRepository.save(car);
     }
 
