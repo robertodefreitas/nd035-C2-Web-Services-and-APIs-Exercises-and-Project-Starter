@@ -4,9 +4,12 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -105,11 +108,12 @@ public class CarControllerUnitTest {
         mockCar.setId(1L); //1L == (long)1
 
         mockMvc.perform(
-                post(new URI("/cars"))
-                        .content(mockJson.write(mockCar).getJson())
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .accept(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isCreated());
+            post(new URI("/cars"))
+            .content(mockJson.write(mockCar).getJson())
+            .contentType(MediaType.APPLICATION_JSON_UTF8)
+            .accept(MediaType.APPLICATION_JSON_UTF8)
+        )
+        .andExpect(status().isCreated());
 
         log.info("[{}] [mockJson.write(mockCar).getJson()] JSON: {}", methodeName, mockJson.write(mockCar).getJson());
         log.info("[{}] UnitTest is finished.", methodeName);
@@ -124,10 +128,26 @@ public class CarControllerUnitTest {
         /**
          * TODO: Add a test to check that the `get` method works by calling
          *   the whole list of vehicles. This should utilize the car from `getCar()`
-         *   below (the vehicle will be the first in the list).
+         *   below (the vehicle will be the first in the list). [DONE]
          */
         String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
         log.info("[{}] UnitTest is started...", methodeName);
+
+        mockMvc
+            .perform(
+                get("/cars")
+            )
+            .andExpect(status().isOk());
+
+        mockMvc
+            .perform(
+                get(new URI("/cars"))
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON_UTF8)
+            )
+            .andExpect(status().isOk());
+
+        verify(carService, times(2)).list();
 
         log.info("[{}] UnitTest is finished.", methodeName);
 
