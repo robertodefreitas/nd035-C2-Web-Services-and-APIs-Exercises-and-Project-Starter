@@ -7,7 +7,6 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -24,6 +23,8 @@ import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -43,8 +44,10 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureJsonTesters
 public class CarControllerUnitTest {
 
+    private static final Logger log = LoggerFactory.getLogger(CarControllerUnitTest.class);
+
     @Autowired
-    private MockMvc mvc;
+    private MockMvc mockMvc;
 
     @Autowired
     private JacksonTester<Car> json;
@@ -62,12 +65,23 @@ public class CarControllerUnitTest {
      * Creates pre-requisites for testing, such as an example car.
      */
     @Before
-    public void setup() {
-        Car car = getCar();
-        car.setId(1L);
-        given(carService.save(any())).willReturn(car);
-        given(carService.findById(any())).willReturn(car);
-        given(carService.list()).willReturn(Collections.singletonList(car));
+    public void setup() throws Exception {
+        String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
+        log.info("[{}] UnitTest is started...", methodeName);
+
+        Car mockCar = getCar();
+        mockCar.setId(1L); //1L == (long)1
+        /**
+         * https://stackoverflow.com/questions/33546124/mockito-given-versus-when
+         * JUNIT: when(foo.doSomething()).thenReturn(somethingElse);
+         * MOCKITO: given(foo.doSomething()).willReturn(somethingElse);
+         * Also, wenn carService.save() verwendet wird, dann soll mockCar verwendet werden.
+         */
+        given(carService.save(any())).willReturn(mockCar);
+        given(carService.findById(any())).willReturn(mockCar);
+        given(carService.list()).willReturn(Collections.singletonList(mockCar));
+
+        log.info("[{}] UnitTest is finished.", methodeName);
     }
 
     /**
@@ -76,21 +90,24 @@ public class CarControllerUnitTest {
      */
     @Test
     public void createCar() throws Exception {
-        Car car = getCar();
+        String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
+        log.info("[{}] UnitTest is started...", methodeName);
 
-        // because of following error by build this api i added an id to the created car
+        Car mockCar = getCar();
+
+        // because of following error by build this api, I added an id to the created car
         // mvn clean package
         // [ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.2:test (default-test) on project vehicles-api: There are test failures.
-        car.setId((long)1);
-        // OR
-        //car.setId(1L);
+        mockCar.setId(1L); //1L == (long)1
 
-        mvc.perform(
+        mockMvc.perform(
                 post(new URI("/cars"))
-                        .content(json.write(car).getJson())
+                        .content(json.write(mockCar).getJson())
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isCreated());
+
+        log.info("[{}] UnitTest is finished.", methodeName);
     }
 
     /**
@@ -104,6 +121,10 @@ public class CarControllerUnitTest {
          *   the whole list of vehicles. This should utilize the car from `getCar()`
          *   below (the vehicle will be the first in the list).
          */
+        String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
+        log.info("[{}] UnitTest is started...", methodeName);
+
+        log.info("[{}] UnitTest is finished.", methodeName);
 
     }
 
@@ -117,6 +138,10 @@ public class CarControllerUnitTest {
          * TODO: Add a test to check that the `get` method works by calling
          *   a vehicle by ID. This should utilize the car from `getCar()` below.
          */
+        String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
+        log.info("[{}] UnitTest is started...", methodeName);
+
+        log.info("[{}] UnitTest is finished.", methodeName);
     }
 
     /**
@@ -130,6 +155,10 @@ public class CarControllerUnitTest {
          *   when the `delete` method is called from the Car Controller. This
          *   should utilize the car from `getCar()` below.
          */
+        String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
+        log.info("[{}] UnitTest is started...", methodeName);
+
+        log.info("[{}] UnitTest is finished.", methodeName);
     }
 
     /**
@@ -137,6 +166,9 @@ public class CarControllerUnitTest {
      * @return an example Car object
      */
     private Car getCar() {
+        String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
+        log.info("[{}] UnitTest is started...", methodeName);
+
         Car car = new Car();
         car.setLocation(new Location(40.730610, -73.935242));
         Details details = new Details();
@@ -153,6 +185,9 @@ public class CarControllerUnitTest {
         details.setNumberOfDoors(4);
         car.setDetails(details);
         car.setCondition(Condition.USED);
+
+        log.info("[{}] UnitTest is finished.", methodeName);
+
         return car;
     }
 }
