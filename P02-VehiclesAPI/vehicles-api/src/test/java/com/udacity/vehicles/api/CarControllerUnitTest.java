@@ -9,7 +9,6 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -37,6 +36,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 /**
  * Implements testing of the CarController class.
@@ -57,7 +57,8 @@ public class CarControllerUnitTest {
      * Example: mockJson.write(mockCar).getJson()
      */
     @Autowired
-    private JacksonTester<Car> mockJson;
+    private JacksonTester<Car> mockJsonCar;
+    //private JacksonTester<MvcResult> mockJsonMvcResult;
 
     @MockBean
     private CarService carService;
@@ -141,13 +142,13 @@ public class CarControllerUnitTest {
 
         mockMvc.perform(
             post(new URI("/cars"))
-            .content(mockJson.write(mockCar).getJson())
+            .content(mockJsonCar.write(mockCar).getJson())
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .accept(MediaType.APPLICATION_JSON_UTF8)
         )
         .andExpect(status().isCreated());
 
-        log.info("[{}] [mockJson.write(mockCar).getJson()] JSON: {}", methodeName, mockJson.write(mockCar).getJson());
+        log.info("[{}] [mockJson.write(mockCar).getJson()] JSON: {}", methodeName, mockJsonCar.write(mockCar).getJson());
         log.info("[{}] UnitTest is finished.", methodeName);
     }
 
@@ -212,7 +213,19 @@ public class CarControllerUnitTest {
             )
             .andExpect(status().isOk());
 
-        verify(carService, times(1)).findById(1L); // 1L == (long)1
+        MvcResult findCarResult = mockMvc
+            .perform(
+                get("/cars/1")
+            )
+            .andReturn();
+
+        //String jsonResult = mockJsonMvcResult.write(findCarResult.getResponse().getContentAsString()).getJson();
+
+        log.info("[{}] RESULT JSON: {}", methodeName, findCarResult.getResponse().getContentAsString());
+
+
+
+        verify(carService, times(2)).findById(1L); // 1L == (long)1
         verify(carService, times(1)).findById(2L); // 2L == (long)2
 
         log.info("[{}] UnitTest is finished.", methodeName);
