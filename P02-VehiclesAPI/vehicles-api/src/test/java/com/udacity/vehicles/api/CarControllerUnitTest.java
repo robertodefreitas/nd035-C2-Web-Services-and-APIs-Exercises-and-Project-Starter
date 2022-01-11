@@ -69,6 +69,37 @@ public class CarControllerUnitTest {
     private MapsClient mapsClient;
 
     /**
+     * Creates an example Car object for use in testing.
+     * @return an example Car object
+     */
+    private Car getCar() {
+        String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
+        log.info("[{}] UnitTest is started...", methodeName);
+
+        Car car = new Car();
+        car.setLocation(new Location(40.730610, -73.935242));
+        Details details = new Details();
+        Manufacturer manufacturer = new Manufacturer(101, "Chevrolet");
+        details.setManufacturer(manufacturer);
+        details.setModel("Impala");
+        details.setMileage(32280);
+        details.setExternalColor("white");
+        details.setBody("sedan");
+        details.setEngine("3.6L V6");
+        details.setFuelType("Gasoline");
+        details.setModelYear(2018);
+        details.setProductionYear(2018);
+        details.setNumberOfDoors(4);
+        car.setDetails(details);
+        car.setCondition(Condition.USED);
+
+        log.info("[{}] UnitTest is finished.", methodeName);
+
+        return car;
+    }
+
+
+    /**
      * Creates pre-requisites for testing, such as an example car.
      */
     @Before
@@ -90,6 +121,7 @@ public class CarControllerUnitTest {
 
         log.info("[{}] UnitTest is finished.", methodeName);
     }
+
 
     /**
      * Tests for successful creation of new car in the system
@@ -133,12 +165,14 @@ public class CarControllerUnitTest {
         String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
         log.info("[{}] UnitTest is started...", methodeName);
 
+        // First Car
         mockMvc
             .perform(
                 get("/cars")
             )
             .andExpect(status().isOk());
 
+        // Second Car
         mockMvc
             .perform(
                 get(new URI("/cars"))
@@ -161,10 +195,25 @@ public class CarControllerUnitTest {
     public void findCar() throws Exception {
         /**
          * TODO: Add a test to check that the `get` method works by calling
-         *   a vehicle by ID. This should utilize the car from `getCar()` below.
+         *   a vehicle by ID. This should utilize the car from `getCar()` below. [DONE]
          */
         String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
         log.info("[{}] UnitTest is started...", methodeName);
+
+        mockMvc
+            .perform(
+                get("/cars/1")
+            )
+            .andExpect(status().isOk());
+
+        mockMvc
+            .perform(
+                    get("/cars/2")
+            )
+            .andExpect(status().isOk());
+
+        verify(carService, times(1)).findById(1L); // 1L == (long)1
+        verify(carService, times(1)).findById(2L); // 2L == (long)2
 
         log.info("[{}] UnitTest is finished.", methodeName);
     }
@@ -178,41 +227,33 @@ public class CarControllerUnitTest {
         /**
          * TODO: Add a test to check whether a vehicle is appropriately deleted
          *   when the `delete` method is called from the Car Controller. This
-         *   should utilize the car from `getCar()` below.
+         *   should utilize the car from `getCar()` below. [DONE]
          */
         String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
         log.info("[{}] UnitTest is started...", methodeName);
 
+        mockMvc
+            .perform(
+                delete("/cars/1")
+            )
+            .andExpect(status().isNoContent());
+
+        mockMvc
+            .perform(
+                    delete("/cars/1")
+            )
+            .andExpect(status().isNoContent());
+
+        mockMvc
+            .perform(
+                    delete("/cars/11")
+            )
+            .andExpect(status().isNoContent());
+
+        verify(carService, times(2)).delete(1L); // 1L == (long)1
+        verify(carService, times(1)).delete(11L); // 11L == (long)11
+
         log.info("[{}] UnitTest is finished.", methodeName);
     }
 
-    /**
-     * Creates an example Car object for use in testing.
-     * @return an example Car object
-     */
-    private Car getCar() {
-        String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
-        log.info("[{}] UnitTest is started...", methodeName);
-
-        Car car = new Car();
-        car.setLocation(new Location(40.730610, -73.935242));
-        Details details = new Details();
-        Manufacturer manufacturer = new Manufacturer(101, "Chevrolet");
-        details.setManufacturer(manufacturer);
-        details.setModel("Impala");
-        details.setMileage(32280);
-        details.setExternalColor("white");
-        details.setBody("sedan");
-        details.setEngine("3.6L V6");
-        details.setFuelType("Gasoline");
-        details.setModelYear(2018);
-        details.setProductionYear(2018);
-        details.setNumberOfDoors(4);
-        car.setDetails(details);
-        car.setCondition(Condition.USED);
-
-        log.info("[{}] UnitTest is finished.", methodeName);
-
-        return car;
-    }
 }
