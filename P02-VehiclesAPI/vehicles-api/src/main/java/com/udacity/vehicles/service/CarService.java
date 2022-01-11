@@ -180,6 +180,7 @@ public class CarService {
         }
 
         log.info("Car {}/{} will be saved.", car.getDetails().getBody(), car.getDetails().getModel());
+        log.debug("Car {}/{} will be saved.", car.getDetails().getBody(), car.getDetails().getModel());
         return carRepository.save(car);
     }
 

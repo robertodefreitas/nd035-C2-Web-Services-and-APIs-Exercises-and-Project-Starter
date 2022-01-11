@@ -49,8 +49,12 @@ public class CarControllerUnitTest {
     @Autowired
     private MockMvc mockMvc;
 
+    /**
+     * Create a JSON Content from an Object
+     * Example: mockJson.write(mockCar).getJson()
+     */
     @Autowired
-    private JacksonTester<Car> json;
+    private JacksonTester<Car> mockJson;
 
     @MockBean
     private CarService carService;
@@ -102,11 +106,12 @@ public class CarControllerUnitTest {
 
         mockMvc.perform(
                 post(new URI("/cars"))
-                        .content(json.write(mockCar).getJson())
+                        .content(mockJson.write(mockCar).getJson())
                         .contentType(MediaType.APPLICATION_JSON_UTF8)
                         .accept(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(status().isCreated());
 
+        log.info("[{}] [mockJson.write(mockCar).getJson()] JSON: {}", methodeName, mockJson.write(mockCar).getJson());
         log.info("[{}] UnitTest is finished.", methodeName);
     }
 
