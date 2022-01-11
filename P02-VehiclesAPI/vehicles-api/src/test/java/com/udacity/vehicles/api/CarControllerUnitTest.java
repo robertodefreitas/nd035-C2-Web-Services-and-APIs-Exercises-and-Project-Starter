@@ -41,7 +41,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @SpringBootTest
 @AutoConfigureMockMvc
 @AutoConfigureJsonTesters
-public class CarControllerTest {
+public class CarControllerUnitTest {
 
     @Autowired
     private MockMvc mvc;
@@ -82,6 +82,7 @@ public class CarControllerTest {
         // mvn clean package
         // [ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.2:test (default-test) on project vehicles-api: There are test failures.
         car.setId((long)1);
+        // OR
         //car.setId(1L);
 
         mvc.perform(

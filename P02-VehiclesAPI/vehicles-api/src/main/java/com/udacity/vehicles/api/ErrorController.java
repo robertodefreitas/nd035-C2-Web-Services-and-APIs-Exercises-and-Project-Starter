@@ -17,7 +17,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class ErrorController extends ResponseEntityExceptionHandler {
 
-    private static final String DEFAULT_VALIDATION_FAILED_MESSAGE = "Validation failed";
+    private static final String DEFAULT_VALIDATION_FAILED_MESSAGE = "[ErrorController] Validation failed";
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(

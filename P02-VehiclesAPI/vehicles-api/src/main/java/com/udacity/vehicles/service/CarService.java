@@ -44,7 +44,13 @@ public class CarService {
      * @return a list of all vehicles in the CarRepository
      */
     public List<Car> list() {
-        return carRepository.findAll();
+        /**
+         * MY-NOTES:
+         * this methode is used by "GET /cars"
+         * the results dont show the cars with the price and location details
+         */
+        List<Car> carFoundedList = carRepository.findAll();
+        return carFoundedList;
     }
 
     /**

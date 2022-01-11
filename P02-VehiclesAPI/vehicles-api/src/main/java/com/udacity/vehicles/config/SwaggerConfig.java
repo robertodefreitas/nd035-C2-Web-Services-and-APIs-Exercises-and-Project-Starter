@@ -5,6 +5,9 @@ import java.util.Collections;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -14,13 +17,16 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
+
 // only by version < 3.0.0
 // http://localhost:8211/swagger-ui.html
 @EnableSwagger2
+
 // only by version > 3.0.0
 // http://localhost:8211/swagger-ui/
 //@EnableSwagger2WebMvc
 public class SwaggerConfig {
+/*
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
@@ -28,7 +34,28 @@ public class SwaggerConfig {
                 .apis(RequestHandlerSelectors.any())
                 .paths(PathSelectors.any())
                 .build()
-                .useDefaultResponseMessages(false);
+                .useDefaultResponseMessages(false)
+                .apiInfo(apiInfo());;
+    }
+*/
+
+    @Bean
+    public Docket apiCarsAny() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("GroupName_carsAny")
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.udacity.vehicles.api"))
+                .paths(thePaths())
+                //.paths(Predicates.or(PathSelectors.ant("/cars"),PathSelectors.ant("/cars/*")))
+                .build()
+                .apiInfo(apiInfo());
+    }
+
+    private Predicate<String> thePaths() {
+        return Predicates.or(
+                PathSelectors.ant("/cars"),
+                PathSelectors.ant("/cars/*")
+        );
     }
 
     private ApiInfo apiInfo() {
