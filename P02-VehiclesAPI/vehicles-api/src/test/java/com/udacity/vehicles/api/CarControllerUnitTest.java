@@ -62,7 +62,7 @@ public class CarControllerUnitTest {
     @Autowired
     private JacksonTester<Car> mockJsonCar;
     //private JacksonTester<MvcResult> mockJsonMvcResult;
-    //private JacksonTester<Location> mockJsonLocation;
+    private JacksonTester<Location> mockJsonLocation;
 
     @MockBean
     private CarService carService;
@@ -254,11 +254,16 @@ public class CarControllerUnitTest {
 
         Car mockCarFindCar = getCar();
         mockCarFindCar.setId(43L); //43L == (long)43
-        given(carService.findById(any())).willReturn(mockCarFindCar); // this will be used by findCar()
 
         //String priceResult = priceClient.getPrice(43L); //43L == (long)43
+        String priceResult = "EUR 24111.11";
         //Location mapsResult = mapsClient.getAddress(mockCarFindCar.getLocation());
         //String mapsResultJson = mockJsonLocation.write(mapsResult).getJson();
+
+        given(carService.save(mockCarFindCar)).willReturn(mockCarFindCar); // this will be used by createCar()
+        given(carService.list()).willReturn(Collections.singletonList(mockCarFindCar)); // this will be used by listCars()
+        given(carService.findById(43L)).willReturn(mockCarFindCar); // this will be used by findCar()
+        given(priceClient.getPrice(43L)).willReturn(priceResult); // this will be used by findCar()
 
         /**
          * Created to see the OUTPUT JSON file
@@ -269,7 +274,7 @@ public class CarControllerUnitTest {
                 )
                 .andReturn();
         log.info("[{}] RESULT2 JSON: {}", methodeName, findCarResult2.getResponse().getContentAsString());
-        //log.info("[{}] PRICE: {}", methodeName, priceResult);
+        log.info("[{}] PRICE: {}", methodeName, priceResult);
         //log.info("[{}] LOCATION JSON: {}", methodeName, mapsResultJson);
 
         // #######################################################
