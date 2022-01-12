@@ -138,7 +138,7 @@ public class CarControllerUnitTest {
         // because of following error by build this api, I added an id to the created car
         // mvn clean package
         // [ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.2:test (default-test) on project vehicles-api: There are test failures.
-        mockCar.setId(1L); //1L == (long)1
+        //mockCar.setId(1L); //1L == (long)1
 
         mockMvc.perform(
             post(new URI("/cars"))
@@ -148,7 +148,19 @@ public class CarControllerUnitTest {
         )
         .andExpect(status().isCreated());
 
-        log.info("[{}] [mockJson.write(mockCar).getJson()] JSON: {}", methodeName, mockJsonCar.write(mockCar).getJson());
+        MvcResult findCarResult = mockMvc
+            .perform(
+                post(new URI("/cars"))
+                .content(mockJsonCar.write(mockCar).getJson())
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON_UTF8)
+        )
+        .andReturn();
+
+        //String jsonResult = mockJsonMvcResult.write(findCarResult.getResponse().getContentAsString()).getJson();
+
+        log.info("[{}] [mockJson.write(mockCar).getJson()] INPUT JSON: {}", methodeName, mockJsonCar.write(mockCar).getJson());
+        log.info("[{}] RESULT/OUTPUT JSON: {}", methodeName, findCarResult.getResponse().getContentAsString());
         log.info("[{}] UnitTest is finished.", methodeName);
     }
 
@@ -173,7 +185,7 @@ public class CarControllerUnitTest {
             )
             .andExpect(status().isOk());
 
-        // Second Car
+        // Second Car, other possibility with the same result
         mockMvc
             .perform(
                 get(new URI("/cars"))
