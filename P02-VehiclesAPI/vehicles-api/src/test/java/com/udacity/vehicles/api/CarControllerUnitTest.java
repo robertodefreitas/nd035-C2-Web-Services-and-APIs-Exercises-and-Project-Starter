@@ -49,6 +49,9 @@ public class CarControllerUnitTest {
 
     private static final Logger log = LoggerFactory.getLogger(CarControllerUnitTest.class);
 
+    /**
+     * MockMvc instance to simulate HTTP requests
+     */
     @Autowired
     private MockMvc mockMvc;
 
@@ -59,6 +62,7 @@ public class CarControllerUnitTest {
     @Autowired
     private JacksonTester<Car> mockJsonCar;
     //private JacksonTester<MvcResult> mockJsonMvcResult;
+    //private JacksonTester<Location> mockJsonLocation;
 
     @MockBean
     private CarService carService;
@@ -68,6 +72,7 @@ public class CarControllerUnitTest {
 
     @MockBean
     private MapsClient mapsClient;
+
 
     /**
      * Creates an example Car object for use in testing.
@@ -108,17 +113,18 @@ public class CarControllerUnitTest {
         String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
         log.info("[{}] UnitTest is started...", methodeName);
 
-        Car mockCar = getCar();
-        mockCar.setId(1L); //1L == (long)1
+        Car mockCarSetup = getCar();
+        mockCarSetup.setId(11L); //11L == (long)11
         /**
          * https://stackoverflow.com/questions/33546124/mockito-given-versus-when
          * JUNIT: when(foo.doSomething()).thenReturn(somethingElse);
          * MOCKITO: given(foo.doSomething()).willReturn(somethingElse);
          * Also, wenn carService.save() verwendet wird, dann soll mockCar verwendet werden.
          */
-        given(carService.save(any())).willReturn(mockCar);
-        given(carService.findById(any())).willReturn(mockCar);
-        given(carService.list()).willReturn(Collections.singletonList(mockCar));
+        given(carService.save(any())).willReturn(mockCarSetup); // this will be used by createCar()
+        given(carService.list()).willReturn(Collections.singletonList(mockCarSetup)); // this will be used by listCars()
+        given(carService.findById(any())).willReturn(mockCarSetup); // this will be used by findCar()
+        //given(carService.delete(any())).willReturn(mockCarSetup); // this is wrong, because the methode delete(id) is void, also no Return.
 
         log.info("[{}] UnitTest is finished.", methodeName);
     }
@@ -133,16 +139,16 @@ public class CarControllerUnitTest {
         String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
         log.info("[{}] UnitTest is started...", methodeName);
 
-        Car mockCar = getCar();
+        Car mockCarCreateCar = getCar();
 
         // because of following error by build this api, I added an id to the created car
         // mvn clean package
         // [ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.2:test (default-test) on project vehicles-api: There are test failures.
-        //mockCar.setId(1L); //1L == (long)1
+        //mockCarCreateCar.setId(1L); //1L == (long)1
 
         mockMvc.perform(
             post(new URI("/cars"))
-            .content(mockJsonCar.write(mockCar).getJson())
+            .content(mockJsonCar.write(mockCarCreateCar).getJson())
             .contentType(MediaType.APPLICATION_JSON_UTF8)
             .accept(MediaType.APPLICATION_JSON_UTF8)
         )
@@ -151,7 +157,7 @@ public class CarControllerUnitTest {
         MvcResult findCarResult = mockMvc
             .perform(
                 post(new URI("/cars"))
-                .content(mockJsonCar.write(mockCar).getJson())
+                .content(mockJsonCar.write(mockCarCreateCar).getJson())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8)
         )
@@ -159,10 +165,11 @@ public class CarControllerUnitTest {
 
         //String jsonResult = mockJsonMvcResult.write(findCarResult.getResponse().getContentAsString()).getJson();
 
-        log.info("[{}] [mockJson.write(mockCar).getJson()] INPUT JSON: {}", methodeName, mockJsonCar.write(mockCar).getJson());
+        log.info("[{}] [mockJson.write(mockCarCreateCar).getJson()] INPUT JSON: {}", methodeName, mockJsonCar.write(mockCarCreateCar).getJson());
         log.info("[{}] RESULT/OUTPUT JSON: {}", methodeName, findCarResult.getResponse().getContentAsString());
         log.info("[{}] UnitTest is finished.", methodeName);
     }
+
 
     /**
      * Tests if the read operation appropriately returns a list of vehicles.
@@ -200,6 +207,7 @@ public class CarControllerUnitTest {
 
     }
 
+
     /**
      * Tests the read operation for a single car by ID.
      * @throws Exception if the read operation for a single car fails
@@ -215,33 +223,60 @@ public class CarControllerUnitTest {
 
         mockMvc
             .perform(
-                get("/cars/1")
+                get("/cars/41")
             )
             .andExpect(status().isOk());
 
         mockMvc
             .perform(
-                    get("/cars/2")
+                    get("/cars/42")
             )
             .andExpect(status().isOk());
 
-        MvcResult findCarResult = mockMvc
+        /**
+         * Created to see the OUTPUT JSON file
+         */
+        MvcResult findCarResult1 = mockMvc
             .perform(
-                get("/cars/1")
+                get("/cars/41")
             )
             .andReturn();
 
         //String jsonResult = mockJsonMvcResult.write(findCarResult.getResponse().getContentAsString()).getJson();
 
-        log.info("[{}] RESULT JSON: {}", methodeName, findCarResult.getResponse().getContentAsString());
+        log.info("[{}] RESULT1 JSON: {}", methodeName, findCarResult1.getResponse().getContentAsString());
 
 
+        verify(carService, times(2)).findById(41L); // 41L == (long)41
+        verify(carService, times(1)).findById(42L); // 42L == (long)42
 
-        verify(carService, times(2)).findById(1L); // 1L == (long)1
-        verify(carService, times(1)).findById(2L); // 2L == (long)2
+        // #######################################################
+
+        Car mockCarFindCar = getCar();
+        mockCarFindCar.setId(43L); //43L == (long)43
+        given(carService.findById(any())).willReturn(mockCarFindCar); // this will be used by findCar()
+
+        //String priceResult = priceClient.getPrice(43L); //43L == (long)43
+        //Location mapsResult = mapsClient.getAddress(mockCarFindCar.getLocation());
+        //String mapsResultJson = mockJsonLocation.write(mapsResult).getJson();
+
+        /**
+         * Created to see the OUTPUT JSON file
+         */
+        MvcResult findCarResult2 = mockMvc
+                .perform(
+                        get("/cars/41")
+                )
+                .andReturn();
+        log.info("[{}] RESULT2 JSON: {}", methodeName, findCarResult2.getResponse().getContentAsString());
+        //log.info("[{}] PRICE: {}", methodeName, priceResult);
+        //log.info("[{}] LOCATION JSON: {}", methodeName, mapsResultJson);
+
+        // #######################################################
 
         log.info("[{}] UnitTest is finished.", methodeName);
     }
+
 
     /**
      * Tests the deletion of a single car by ID.
@@ -259,24 +294,24 @@ public class CarControllerUnitTest {
 
         mockMvc
             .perform(
-                delete("/cars/1")
+                delete("/cars/51")
             )
             .andExpect(status().isNoContent());
 
         mockMvc
             .perform(
-                    delete("/cars/1")
+                    delete("/cars/51")
             )
             .andExpect(status().isNoContent());
 
         mockMvc
             .perform(
-                    delete("/cars/11")
+                    delete("/cars/52")
             )
             .andExpect(status().isNoContent());
 
-        verify(carService, times(2)).delete(1L); // 1L == (long)1
-        verify(carService, times(1)).delete(11L); // 11L == (long)11
+        verify(carService, times(2)).delete(51L); // 51L == (long)51
+        verify(carService, times(1)).delete(52L); // 52L == (long)52
 
         log.info("[{}] UnitTest is finished.", methodeName);
     }
