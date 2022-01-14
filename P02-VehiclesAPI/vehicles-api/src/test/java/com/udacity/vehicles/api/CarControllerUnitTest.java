@@ -87,9 +87,9 @@ public class CarControllerUnitTest {
         Car car = new Car();
         car.setLocation(new Location(40.730610, -73.935242));
         Details details = new Details();
-        Manufacturer manufacturer = new Manufacturer(101, "Chevrolet");
+        Manufacturer manufacturer = new Manufacturer(101, "ChevroletMock");
         details.setManufacturer(manufacturer);
-        details.setModel("Impala");
+        details.setModel("ImpalaMock");
         details.setMileage(32280);
         details.setExternalColor("white");
         details.setBody("sedan");
@@ -106,6 +106,25 @@ public class CarControllerUnitTest {
         return car;
     }
 
+    /**
+     * Creates an example Car object for use in testing.
+     * @return an example Car object
+     */
+    private Location getLocation(double lat, double lon) {
+        String methodeName = new Object(){}.getClass().getEnclosingMethod().getName();
+        log.info("[{}] UnitTest is started...", methodeName);
+
+        //Location serviceLocation = new Location(11.111, -77.777);
+        Location serviceLocation = new Location(lat, lon);
+        serviceLocation.setAddress("17171 County Road 11");
+        serviceLocation.setCity("FairhopeMock");
+        serviceLocation.setState("MK");
+        serviceLocation.setZip("71717");
+
+        log.info("[{}] UnitTest is finished.", methodeName);
+
+        return serviceLocation;
+    }
 
     /**
      * Creates pre-requisites for testing, such as an example car.
@@ -116,7 +135,22 @@ public class CarControllerUnitTest {
         log.info("[{}] UnitTest is started...", methodeName);
 
         Car mockCarSetup = getCar();
+        Location mockLocationSetup = getLocation(11.111, -77.77777);
+
+
+        // set the price and location for the mockCarSetup
+        given(mapsClient.getAddress(any())).willReturn(mockLocationSetup);
+        given(priceClient.getPrice(any())).willReturn("USD 11111.11");
+
+        Location location = mapsClient.getAddress(new Location(mockCarSetup.getLocation().getLat(), mockCarSetup.getLocation().getLon()));
+        String price = priceClient.getPrice(mockCarSetup.getId());
+
+
         mockCarSetup.setId(11L); //11L == (long)11
+        mockCarSetup.setLocation(location);
+        mockCarSetup.setPrice(price);
+
+
         /**
          * https://stackoverflow.com/questions/33546124/mockito-given-versus-when
          * JUNIT: when(foo.doSomething()).thenReturn(somethingElse);
@@ -148,13 +182,14 @@ public class CarControllerUnitTest {
         // [ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:2.22.2:test (default-test) on project vehicles-api: There are test failures.
         //mockCarCreateCar.setId(1L); //1L == (long)1
 
-        mockMvc.perform(
-            post(new URI("/cars"))
-            .content(mockJsonCar.write(mockCarCreateCar).getJson())
-            .contentType(MediaType.APPLICATION_JSON_UTF8)
-            .accept(MediaType.APPLICATION_JSON_UTF8)
-        )
-        .andExpect(status().isCreated());
+        mockMvc
+            .perform(
+                post(new URI("/cars"))
+                .content(mockJsonCar.write(mockCarCreateCar).getJson())
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .accept(MediaType.APPLICATION_JSON_UTF8)
+            )
+            .andExpect(status().isCreated());
 
         MvcResult findCarResult = mockMvc
             .perform(
@@ -162,8 +197,8 @@ public class CarControllerUnitTest {
                 .content(mockJsonCar.write(mockCarCreateCar).getJson())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .accept(MediaType.APPLICATION_JSON_UTF8)
-        )
-        .andReturn();
+            )
+            .andReturn();
 
         //String jsonResult = mockJsonMvcResult.write(findCarResult.getResponse().getContentAsString()).getJson();
 
@@ -253,31 +288,47 @@ public class CarControllerUnitTest {
         verify(carService, times(1)).findById(42L); // 42L == (long)42
 
         // #######################################################
+        // ### EXAMPLE without the method setup()
 
         Car mockCarFindCar = getCar();
-        mockCarFindCar.setId(43L); //43L == (long)43
-        given(carService.findById(43L)).willReturn(mockCarFindCar); // this will be used by findCar()
+        Location mockLocationFindCar = getLocation(43.4343, -77.77777);
 
-        // -> stdout NULL -> ???
+        given(carService.findById(43L)).willReturn(mockCarFindCar); // this will be used by findCar()
+        given(mapsClient.getAddress(any())).willReturn(mockLocationFindCar);
+        given(priceClient.getPrice(any())).willReturn("USD 4343.43");
+
+
+        // set the price and location for the mockCarFindCar
+        Location location = mapsClient.getAddress(new Location(mockCarFindCar.getLocation().getLat(), mockCarFindCar.getLocation().getLon()));
+        String price = priceClient.getPrice(mockCarFindCar.getId());
+
+        mockCarFindCar.setId(43L); //43L == (long)43
+        mockCarFindCar.setLocation(location);
+        mockCarFindCar.setPrice(price);
+
+
+        // -> stdout NULL -> before i created the location with mapsClient.getAddress(...)
         String priceResult = priceClient.getPrice(43L); //43L == (long)43
         //String priceResult = "EUR 00000.00";
 
-        // -> stdout NULL -> ???
+        // -> stdout NULL -> before i created the location with mapsClient.getAddress(...)
+        // mockJsonLocation: java.lang.IllegalArgumentException: Value must not be null
         Location mapsResult = mapsClient.getAddress(mockCarFindCar.getLocation());
-        // java.lang.IllegalArgumentException: Value must not be null
-        //String mapsResultJson = mockJsonLocation.write(mapsResult).getJson();
+        String mapsResultJson = mockJsonLocation.write(mapsResult).getJson();
 
         /**
          * Created to see the OUTPUT JSON file
          */
         MvcResult findCarResult2 = mockMvc
-                .perform(
-                        get("/cars/43")
-                )
-                .andReturn();
+            .perform(
+                    get("/cars/43")
+            )
+            .andReturn();
+
         log.info("[{}] RESULT2 JSON: {}", methodeName, findCarResult2.getResponse().getContentAsString());
         log.info("[{}] PRICE: {}", methodeName, priceResult);
-        log.info("[{}] LOCATION JSON: {}", methodeName, mapsResult);
+        //log.info("[{}] LOCATION JSON: {}", methodeName, mapsResult.toString());
+        log.info("[{}] LOCATION JSON: {}", methodeName, mapsResultJson);
 
         // #######################################################
 
